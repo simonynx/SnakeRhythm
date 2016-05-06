@@ -59,11 +59,7 @@ public class Road : MonoBehaviour
 			currentTime = Time.time;
 
 			var first = grids [0];
-			if (first.isBounce) {
-				Debug.Log ("Bounce Grid pos:" + first.transform.position);
-			}
-			first.isBounce = false;
-			first.transform.position = Vector3.zero;
+			first.Reset();
 			gridPool.Return<GridCtrl> (first);
 			grids.RemoveAt (0);
 
@@ -88,7 +84,6 @@ public class Road : MonoBehaviour
 		for (int i = 0; i < grids.Count; i++) {
 			if (grids [i].type == GridType.Spring) {
 				grids [i].Bounce ();
-				return;
 			}
 		}
 	}

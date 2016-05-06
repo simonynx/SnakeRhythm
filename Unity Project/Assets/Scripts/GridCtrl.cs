@@ -24,6 +24,8 @@ public class GridCtrl : MonoBehaviour
 
 	public float bounceHeight = 2f;
 
+    public bool isCanBounce;
+
 	public bool isBounce { get; set;}
 	Vector3 originPos;
 	Vector3 bouncePeakPos;
@@ -72,13 +74,18 @@ public class GridCtrl : MonoBehaviour
 		if (type != GridType.Spring)
 			return;
 
-		if (isBounce)
+		if (isBounce || !isCanBounce)
 			return;
 		originPos = transform.position;
 		bouncePeakPos = originPos + Vector3.up * bounceHeight;
 		beginBounceTime = Time.time;
 		isBounce = true;
 	}
-		
+
+    public void Reset() {
+        isBounce = false;
+        isCanBounce = false;
+        transform.position = Vector3.zero;
+    }
 }
 
