@@ -11,7 +11,7 @@ GameObject:
   - 33: {fileID: 3302482}
   - 65: {fileID: 6566444}
   - 23: {fileID: 2350440}
-  - 114: {fileID: 11449714}
+  - 114: {fileID: 11409208}
   m_Layer: 0
   m_Name: Grid
   m_TagString: Untagged
@@ -76,7 +76,7 @@ BoxCollider:
   serializedVersion: 2
   m_Size: {x: 1, y: 1, z: 1}
   m_Center: {x: 0, y: 0, z: 0}
---- !u!114 &11449714
+--- !u!114 &11409208
 MonoBehaviour:
   m_ObjectHideFlags: 1
   m_PrefabParentObject: {fileID: 0}
@@ -84,11 +84,13 @@ MonoBehaviour:
   m_GameObject: {fileID: 155574}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 780e234c16b6f4fa4865b1dd3b460cdc, type: 3}
+  m_Script: {fileID: 11500000, guid: 2c82014b1210a4ba3aa82de1171b63d0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  width: 10
-  height: 3
+  width: 5
+  height: 1.5
+  bounceHeight: 2
+  isCanBounce: 0
 --- !u!1001 &100100000
 Prefab:
   m_ObjectHideFlags: 1

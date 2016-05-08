@@ -13,6 +13,8 @@ public class GridCtrl : MonoBehaviour
 	public float width = 2.5f;
 	public float height = 1.5f;
 
+	public float BeatTime;
+
 	GridType type_;
 	public GridType type { 
 		get{ return type_; } 
@@ -79,10 +81,12 @@ public class GridCtrl : MonoBehaviour
 		originPos = transform.position;
 		bouncePeakPos = originPos + Vector3.up * bounceHeight;
 		beginBounceTime = Time.time;
+		Player.instance.jump ();
 		isBounce = true;
 	}
 
     public void Reset() {
+		BeatTime = 0;
         isBounce = false;
         isCanBounce = false;
         transform.position = Vector3.zero;
