@@ -81,7 +81,6 @@ public class GridCtrl : MonoBehaviour
 		originPos = transform.position;
 		bouncePeakPos = originPos + Vector3.up * bounceHeight;
 		beginBounceTime = Time.time;
-		Player.instance.jump ();
 		isBounce = true;
 	}
 

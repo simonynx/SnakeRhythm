@@ -3,12 +3,19 @@ using System.Collections;
 
 public class SongPlayer : MonoBehaviour
 {
+
+	public static SongPlayer instance;
+
 	public SongData Song;
 
 	protected float SmoothAudioTime = 0f;
 	protected bool AudioStopEventFired = false;
 	protected bool WasPlaying = false;
 	protected bool IsSongPlaying = false;
+
+	void Awake(){
+		instance = this;
+	}
 
 	void Update()
 	{
@@ -34,7 +41,8 @@ public class SongPlayer : MonoBehaviour
 		 || ( WasPlaying && GetComponent<AudioSource>().time == 0 ) )
 		{
 			IsSongPlaying = false;
-			GetComponent<GuitarGameplay>().OnSongFinished();
+//			GetComponent<GuitarGameplay>().OnSongFinished();
+			GameController.instance.StopPlay();
 		}
 	}
 

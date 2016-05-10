@@ -89,6 +89,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   width: 5
   height: 1.5
+  BeatTime: 0
   bounceHeight: 2
   isCanBounce: 0
 --- !u!1001 &100100000

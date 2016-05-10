@@ -3,12 +3,13 @@ using System.Collections;
 
 public class Player : MonoBehaviour {
 
-    public static Player instance;
-
     public float speed = 3.0F;
     public float jumpSpeed = 8.0F;
     public float jumpForward = 4f;
     public float gravity = 20.0F;
+
+	public float jumpHeight = 2f;
+
     private Vector3 moveDirection = Vector3.zero;
 
     //	Rigidbody rigidbody;
@@ -17,8 +18,13 @@ public class Player : MonoBehaviour {
     bool isJump = false;
     CharacterController controller;
 
+	Vector3 originPos;
+	Vector3 jumpPeakPos;
+	float beginJumpTime;
+	float jumpUpTime = 0.15f;
+	float jumpDownTime = 0.15f;
+
     void Start() {
-        instance = this;
         //		rigidbody = GetComponent<Rigidbody> ();
         controller = GetComponent<CharacterController>();
 
@@ -45,6 +51,18 @@ public class Player : MonoBehaviour {
 //                grid.isCanBounce = true;
 //            }
 //        }
+
+		if (isJump) {
+			if (Time.time - beginJumpTime < jumpUpTime) {
+				transform.position = Vector3.Lerp (transform.position, jumpPeakPos, Time.deltaTime * 5f);
+			} else if (Time.time - beginJumpTime < jumpUpTime + jumpDownTime) {
+				transform.position = Vector3.Lerp (transform.position, originPos, Time.deltaTime * 5f);
+			} else {
+				transform.position = originPos;
+				isJump = false;
+				Debug.Log ("Bounce Complete! pos:"+originPos+",Time:" + Time.time);
+			}
+		}
     }
 
     void FixedUpdate() {
@@ -52,12 +70,16 @@ public class Player : MonoBehaviour {
     }
 
     public void jump() {
-        if (controller.isGrounded) {
+//        if (controller.isGrounded) {
             if (isJump)
                 return;
             isJump = true;
-            moveDirection.z += jumpForward;
-            moveDirection.y = jumpSpeed;
-        }
+//            moveDirection.z += jumpForward;
+//            moveDirection.y = jumpSpeed;
+
+			beginJumpTime = Time.time;
+			originPos = transform.position;
+			jumpPeakPos = originPos + Vector3.up * jumpHeight;
+//        }
     }
 }

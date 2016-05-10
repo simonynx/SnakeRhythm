@@ -4,50 +4,46 @@ using System.Collections.Generic;
 
 public class Road : MonoBehaviour
 {
-	public static Road instance;
-
 	public Transform Player;
-	public GameObject startButton;
-
 	public float speed = 1f;
-
+	public int stringIndex = 0;
+	public float gridHeight = 2;
 	public float roadViewRectHeight = 40;
 
-	public float gridHeight = 2;
-
-	Dictionary<float, GridCtrl> grids;
 	List<GridCtrl> roadGrids;
+	exGameObjectPool gridPool;
+	Dictionary<float, GridCtrl> grids;
 
-	public exGameObjectPool gridPool;
+	protected SongPlayer songPlayer;
 
-	SongPlayer songPlayer;
-
-	// Use this for initialization
-	void Start ()
+	void Awake ()
 	{
-		instance = this;
+		gridPool = new exGameObjectPool ();
+		gridPool.prefab = Resources.Load ("Grid") as GameObject;
+		gridPool.size = 40;
 		gridPool.Init ();
-		songPlayer = GetComponent<SongPlayer> ();
+		songPlayer = SongPlayer.instance;
 	}
 
 	void initGrids(){
 		roadGrids = new List<GridCtrl> ();
 		grids = new Dictionary<float, GridCtrl> ();
 
-		float heightOfOneBeat = 5;
+		float viewBeats = 5;
 		float numNotesOfOneBeat = 4;
 
 		float beatOffSet = songPlayer.GetCurrentBeat ();
 	
 		var index = 0;
 		var i = beatOffSet;
-		while (i < songPlayer.GetCurrentBeat () + heightOfOneBeat + 0.5f) {
+		while (i < songPlayer.GetCurrentBeat () + viewBeats + 0.5f) {
 			var grid = gridPool.Request<GridCtrl> ();
 			grid.type = GridType.Normal;
 			grid.height = gridHeight;
 			grid.BeatTime = i;
 			var y = index * gridHeight;
-			grid.transform.position = new Vector3 (0f, 0f, y);
+			grid.transform.parent = transform;
+			grid.transform.localPosition = new Vector3 (0f, 0f, y);
 			roadGrids.Add (grid);
 
 			index++;
@@ -56,11 +52,11 @@ public class Road : MonoBehaviour
 
 		for (int j = 0; j < songPlayer.Song.Notes.Count; j++) {
 			var note = songPlayer.Song.Notes [j];
-			if (note.StringIndex != 1) {
+			if (note.StringIndex != stringIndex) {
 				continue;
 			}
 			
-			if (note.Time - songPlayer.GetCurrentBeat () > heightOfOneBeat) {
+			if (note.Time - songPlayer.GetCurrentBeat () > viewBeats) {
 				continue;
 			}
 			
@@ -68,22 +64,14 @@ public class Road : MonoBehaviour
 				continue;
 			}
 			
-			var process = (note.Time - songPlayer.GetCurrentBeat ()) / heightOfOneBeat;
+			var process = (note.Time - songPlayer.GetCurrentBeat ()) / viewBeats;
 			var grid = gridPool.Request<GridCtrl> ();
 			grid.type = GridType.Spring;
 			grid.height = gridHeight;
 			var y = process * roadViewRectHeight;
-			grid.transform.position = new Vector3 (0f, 0f, y);
+			grid.transform.parent = transform;
+			grid.transform.localPosition = new Vector3 (0f, 0f, y);
 			grids.Add (note.Time, grid);
-		}
-	}
-	
-	// Update is called once per frame
-	void Update ()
-	{
-		if (Input.GetMouseButton (0)) {
-//			BounceSpring ();
-//			Player.instance.jump ();
 		}
 	}
 
@@ -98,7 +86,7 @@ public class Road : MonoBehaviour
 
 		for (int j = 0; j < songPlayer.Song.Notes.Count; j++) {
 			var note = songPlayer.Song.Notes [j];
-			if (note.StringIndex != 1) {
+			if (note.StringIndex != stringIndex) {
 				continue;
 			}
 
@@ -116,7 +104,8 @@ public class Road : MonoBehaviour
 				grid.BeatTime = note.Time;
 				grid.height = gridHeight;
 				var y = process * roadViewRectHeight;
-				grid.transform.position = new Vector3 (0f, 1f, y);
+				grid.transform.parent = transform;
+				grid.transform.localPosition = new Vector3 (0f, 1f, y);
 				grids.Add (note.Time, grid);
 			}
 		}
@@ -127,7 +116,7 @@ public class Road : MonoBehaviour
 				continue;
 			var process = (grid.BeatTime - songPlayer.GetCurrentBeat ()) / 5;
 			var y = process * roadViewRectHeight;
-			grid.transform.position = new Vector3 (0f, 1f, y);
+			grid.transform.localPosition = new Vector3 (0f, 1f, y);
 			if (grid.BeatTime - songPlayer.GetCurrentBeat () <  -2) {
 				removeList.Add (grid);
 			}
@@ -149,9 +138,9 @@ public class Road : MonoBehaviour
 			}
 
 			var process = (roadGrid.BeatTime - songPlayer.GetCurrentBeat ()) / 5;
-			var prePos = roadGrid.transform.position;
+			var prePos = roadGrid.transform.localPosition;
 			prePos.z = process * roadViewRectHeight;
-			roadGrid.transform.position = prePos;
+			roadGrid.transform.localPosition = prePos;
 
 			if (roadGrid.BeatTime - songPlayer.GetCurrentBeat () < -1.5f) {
 				gridPool.Return<GridCtrl> (roadGrid);
@@ -165,8 +154,9 @@ public class Road : MonoBehaviour
 			grid.type = GridType.Normal;
 			grid.height = gridHeight;
 			grid.BeatTime = last.BeatTime + (float)1/4;
-			var y = last.transform.position.z + gridHeight;
-			grid.transform.position = new Vector3 (0f, 0f, y);
+			var y = last.transform.localPosition.z + gridHeight;
+			grid.transform.parent = transform;
+			grid.transform.localPosition = new Vector3 (0f, 0f, y);
 			roadGrids.Add (grid);
 		}
 	}
@@ -188,12 +178,16 @@ public class Road : MonoBehaviour
 	}
 
 	public void StartPlay(){
-		songPlayer.SetSong (songPlayer.Song);
 		initGrids ();
 
 		Player.gameObject.SetActive (true);
-		startButton.SetActive (false);
-
-		songPlayer.Play ();
 	}
+
+	void OnDestroy(){
+		for (int i = 0; i < gridPool.data.Length; i++) {
+			Destroy (gridPool.data [i]);
+		}
+	}
+
+
 }
