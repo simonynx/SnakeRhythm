@@ -22,12 +22,14 @@ public class GameController : MonoBehaviour {
 	void Update () {
 		if (Input.GetKeyDown (KeyCode.F)) {
 			//			BounceSpring ();
-			roads[0].Player.GetComponent<Player>().jump();
+			if(roads[0] && roads[0].Player)
+				roads[0].Player.GetComponent<Player>().jump();
 		}
 
 		if (Input.GetKeyDown (KeyCode.J)) {
 			//			BounceSpring ();
-			roads[1].Player.GetComponent<Player>().jump();
+			if(roads[0] && roads[0].Player)
+				roads[1].Player.GetComponent<Player>().jump();
 		}
 	}
 
@@ -42,7 +44,7 @@ public class GameController : MonoBehaviour {
 			playerGO.transform.parent = road.transform;
 			playerGO.transform.localPosition = new Vector3 (0, 3f, 0);
 			road.Player = playerGO.transform;
-			road.stringIndex = i + 1;
+			road.stringIndex = i + 3;
 			road.StartPlay ();
 			road.transform.position = new Vector3 (-3 + i * 6, 0f, 0f);
 			roads.Add (road);
